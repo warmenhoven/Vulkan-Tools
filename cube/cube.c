@@ -3753,11 +3753,21 @@ static VkSurfaceFormatKHR pick_surface_format(const VkSurfaceFormatKHR *surfaceF
     for (uint32_t i = 0; i < count; i++) {
         const VkFormat format = surfaceFormats[i].format;
 
+#if 1
+        const VkColorSpaceKHR colorSpace = surfaceFormats[i].colorSpace;
+        if (colorSpace != VK_COLOR_SPACE_HDR10_ST2084_EXT)
+            continue;
+
+        if (format == VK_FORMAT_A2B10G10R10_UNORM_PACK32 || format == VK_FORMAT_A2R10G10B10_UNORM_PACK32) {
+            return surfaceFormats[i];
+        }
+#else
         if (format == VK_FORMAT_R8G8B8A8_UNORM || format == VK_FORMAT_B8G8R8A8_UNORM ||
             format == VK_FORMAT_A2B10G10R10_UNORM_PACK32 || format == VK_FORMAT_A2R10G10B10_UNORM_PACK32 ||
             format == VK_FORMAT_R16G16B16A16_SFLOAT) {
             return surfaceFormats[i];
         }
+#endif
     }
 
     printf("Can't find our preferred formats... Falling back to first exposed format. Rendering may be incorrect.\n");
